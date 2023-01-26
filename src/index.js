@@ -18,28 +18,26 @@ function onSearch(evt) {
   evt.preventDefault();
 
   apiService.query = evt.currentTarget.elements.searchQuery.value;
-  apiService
-    .fetchCards()
-    .then(data => {
-      console.log(data);
-      cardsMarkup(data.hits);
+  apiService.resetPage();
 
-      loadBtn.hidden = false;
+  apiService.fetchCards().then(data => {
+    clearGallery();
+    cardsMarkup(data.hits);
+    apiService.incrementPage();
 
-      if (data.total > 0) {
-        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images`);
-      }
+    loadBtn.hidden = false;
 
-      if (data.total === 0) {
-        Notiflix.Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-        loadBtn.hidden = true;
-      }
-    })
-    .catch(err => {
-      console.log(err);
-    });
+    if (data.total > 0) {
+      Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images`);
+    }
+
+    if (data.total === 0) {
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      loadBtn.hidden = true;
+    }
+  });
 }
 
 function cardsMarkup(arr) {
@@ -54,11 +52,8 @@ function cardsMarkup(arr) {
         comments,
         downloads,
       }) =>
-        `<div class="gallery">
-     <a href="${largeImageURL}">
-     <img src="${webformatURL}" alt="${tags}" />
-    </a>
-  </div>
+        `<div class="photo-card">
+  <img src="${webformatURL}" alt="${tags}" loading="lazy" />
   <div class="info">
     <p class="info-item">
       <b>Likes</b>
@@ -76,26 +71,28 @@ function cardsMarkup(arr) {
       <b>Downloads</b>
       ${downloads}
     </p>
-  </div>
-</div>`
+  </div>`
     )
     .join('');
 
   gallery.insertAdjacentHTML('beforeend', markup);
 }
 
-let lightbox = new SimpleLightbox('.gallery a', {
-  captionsData: 'alt',
-  captionDelay: 250,
-});
-
 function onLoadMore() {
-  apiService.fetchCards().then(data => {
-    apiService.incrementPage();
-    cardsMarkup(data.hits);
+  apiService
+    .fetchCards()
+    .then(data => {
+      cardsMarkup(data.hits);
 
-    if (data.totalHits === data.total) {
-      loadBtn.hidden = true;
-    }
-  });
+      if (data.totalHits === data.total) {
+        loadBtn.hidden = true;
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    });
+}
+
+function clearGallery() {
+  gallery.innerHTML = '';
 }
