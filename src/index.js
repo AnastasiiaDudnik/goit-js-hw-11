@@ -1,13 +1,20 @@
 import PixabayApiService from './ApiService';
 import Notiflix from 'notiflix';
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const form = document.querySelector('#search-form');
 const gallery = document.querySelector('.gallery');
 const loadBtn = document.querySelector('.load-more');
+const guard = document.querySelector('.js-guard');
+
+const options = {
+  root: null,
+  rootMargin: '300px',
+  threshold: 0,
+};
 
 const apiService = new PixabayApiService();
+
+let observer = new IntersectionObserver(onLoad, options);
 
 form.addEventListener('submit', onSearch);
 loadBtn.addEventListener('click', onLoadMore);
@@ -23,9 +30,10 @@ function onSearch(evt) {
   apiService.fetchCards().then(data => {
     clearGallery();
     cardsMarkup(data.hits);
-    apiService.incrementPage();
+    observer.observe(guard);
+    // apiService.incrementPage();
 
-    loadBtn.hidden = false;
+    // loadBtn.hidden = false;
 
     if (data.total > 0) {
       Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images`);
@@ -88,11 +96,30 @@ function onLoadMore() {
         loadBtn.hidden = true;
       }
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(err => console.log(err));
 }
 
 function clearGallery() {
   gallery.innerHTML = '';
+}
+
+function onLoad(entries, observer) {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      apiService.incrementPage();
+      apiService
+        .fetchCards()
+        .then(data => {
+          cardsMarkup(data.hits);
+
+          if (data.totalHits === data.total) {
+            Notiflix.Notify.info(
+              `We're sorry, but you've reached the end of search results.`
+            );
+            observer.unobserve(guard);
+          }
+        })
+        .catch(err => console.log(err));
+    }
+  });
 }
