@@ -61,7 +61,9 @@ function cardsMarkup(arr) {
         downloads,
       }) =>
         `<div class="photo-card">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+        
+  <img class="gallery__image" src="${webformatURL}" alt="${tags}" />
+
   <div class="info">
     <p class="info-item">
       <b>Likes</b>
@@ -112,11 +114,15 @@ function onLoad(entries, observer) {
         .then(data => {
           cardsMarkup(data.hits);
 
-          if (data.totalHits === data.total) {
-            Notiflix.Notify.info(
-              `We're sorry, but you've reached the end of search results.`
-            );
-            observer.unobserve(guard);
+          for (let i = 1; i < data.totalHits; i += 1) {
+            console.log(i);
+            console.log(data.totalHits - 1);
+            if (i === data.totalHits - 1) {
+              Notiflix.Notify.info(
+                `We're sorry, but you've reached the end of search results.`
+              );
+              observer.unobserve(guard);
+            }
           }
         })
         .catch(err => console.log(err));
