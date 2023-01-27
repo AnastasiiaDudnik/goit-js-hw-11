@@ -61,9 +61,7 @@ function cardsMarkup(arr) {
         downloads,
       }) =>
         `<div class="photo-card">
-        
-  <img class="gallery__image" src="${webformatURL}" alt="${tags}" />
-
+          <img class="gallery__image" src="${webformatURL}" alt="${tags}" loading="lazy" />
   <div class="info">
     <p class="info-item">
       <b>Likes</b>
@@ -81,6 +79,7 @@ function cardsMarkup(arr) {
       <b>Downloads</b>
       ${downloads}
     </p>
+  </div>
   </div>`
     )
     .join('');
