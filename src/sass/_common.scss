@@ -40,6 +40,8 @@ button:hover {
   margin-right: auto;
   margin-left: auto;
   padding: 7px;
+
+  margin-top: 10px;
 }
 
 .load-more[hidden] {
@@ -71,6 +73,10 @@ img {
   flex-direction: column;
   gap: 9px;
   justify-content: center;
+  border-radius: 5px;
+
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
+    0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
 }
 
 .info {
@@ -86,7 +92,7 @@ img {
   align-items: center;
 }
 
-.gallery__image:hover {
+.photo-card:hover {
   transform: scale(1.05);
   cursor: pointer;
 }

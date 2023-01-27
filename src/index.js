@@ -31,7 +31,7 @@ function onSearch(evt) {
     clearGallery();
     cardsMarkup(data.hits);
     observer.observe(guard);
-    // apiService.incrementPage();
+    apiService.incrementPage();
 
     // loadBtn.hidden = false;
 
@@ -95,6 +95,9 @@ function onLoadMore() {
 
       if (data.totalHits === data.total) {
         loadBtn.hidden = true;
+        Notiflix.Notify.info(
+          `We're sorry, but you've reached the end of search results.`
+        );
       }
     })
     .catch(err => console.log(err));
@@ -113,15 +116,11 @@ function onLoad(entries, observer) {
         .then(data => {
           cardsMarkup(data.hits);
 
-          for (let i = 1; i < data.totalHits; i += 1) {
-            console.log(i);
-            console.log(data.totalHits - 1);
-            if (i === data.totalHits - 1) {
-              Notiflix.Notify.info(
-                `We're sorry, but you've reached the end of search results.`
-              );
-              observer.unobserve(guard);
-            }
+          if (data.totalHits === data.total) {
+            Notiflix.Notify.info(
+              `We're sorry, but you've reached the end of search results.`
+            );
+            observer.unobserve(guard);
           }
         })
         .catch(err => console.log(err));
